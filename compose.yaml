@@ -1,0 +1,62 @@
+services:
+  frontend:
+    build:
+      context: ./elearning-portal
+      dockerfile: Dockerfile
+    container_name: elearning-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./E-learning Portal
+      dockerfile: Dockerfile
+    container_name: elearning-backend
+    ports:
+      - "5000:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: >
+        Host=db;Port=5432;Database=elearningdb;
+        Username=postgres;Password=postgres;
+        Maximum Pool Size=20;Connection Idle Lifetime=60
+      Keycloak__Authority: http://host.docker.internal:9090/realms/elearning-realm
+      Keycloak__PublicIssuer: http://localhost:9090/realms/elearning-realm
+      Keycloak__AdminUrl: http://host.docker.internal:9090
+      Keycloak__Realm: elearning-realm
+      Keycloak__AdminClientId: admin-cli
+      Keycloak__AdminUsername: admin
+      Keycloak__AdminPassword: admin
+      Kestrel__Limits__MaxRequestBodySize: "524288000"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:15
+    container_name: elearning-db
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: elearningdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  keycloak_data:
+    external: true
+    name: keycloak_data

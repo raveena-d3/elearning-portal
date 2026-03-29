@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ELearn Certificate Portal</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono&display=swap');
+    :root {
+      --bg: #faf7f2; --surface: #ffffff; --border: #e8e0d4;
+      --gold: #c9973a; --gold-light: #f0d080; --gold-dark: #8a6520;
+      --navy: #1a2744; --navy-light: #2d3f6b;
+      --text: #1a1a2e; --muted: #7a7a8a; --success: #2d7a4f; --cert-bg: #fffdf5;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* NAVBAR */
+    .navbar { background: var(--navy); padding: 0 40px; height: 64px; display: flex; align-items: center; justify-content: space-between; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-icon { width: 36px; height: 36px; background: linear-gradient(135deg, var(--gold), var(--gold-light)); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .brand-text { font-family: 'Playfair Display', serif; color: white; font-size: 18px; font-weight: 700; }
+    .brand-sub { font-size: 10px; color: var(--gold-light); font-family: 'DM Mono', monospace; letter-spacing: 0.15em; text-transform: uppercase; display: block; }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .sso-pill { display: flex; align-items: center; gap: 6px; background: rgba(45,122,79,0.2); border: 1px solid rgba(45,122,79,0.4); border-radius: 100px; padding: 4px 10px; font-size: 11px; color: #5dba85; font-family: 'DM Mono', monospace; }
+    .sso-dot { width: 6px; height: 6px; border-radius: 50%; background: #5dba85; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .user-chip { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 100px; padding: 6px 14px 6px 6px; }
+    .avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), var(--gold-light)); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--navy); }
+    .uname { font-size: 13px; color: white; font-weight: 500; }
+    .urole { font-size: 10px; color: var(--gold-light); font-family: 'DM Mono', monospace; }
+    .logout-btn { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.7); padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.2s; }
+    .logout-btn:hover { background: rgba(255,255,255,0.08); color: white; }
+
+    /* HERO */
+    .hero { background: linear-gradient(135deg, var(--navy), var(--navy-light)); padding: 60px 40px; text-align: center; position: relative; overflow: hidden; }
+    .hero::before { content:''; position:absolute; inset:0; background-image: radial-gradient(rgba(201,151,58,0.1) 1px, transparent 1px); background-size:30px 30px; }
+    .hero-content { position: relative; z-index: 1; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(201,151,58,0.15); border: 1px solid rgba(201,151,58,0.3); border-radius: 100px; padding: 6px 16px; font-size: 12px; color: var(--gold-light); font-family: 'DM Mono', monospace; text-transform: uppercase; margin-bottom: 20px; }
+    .hero h1 { font-family: 'Playfair Display', serif; font-size: 48px; font-weight: 900; color: white; margin-bottom: 12px; }
+    .hero h1 span { background: linear-gradient(135deg, var(--gold), var(--gold-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero p { color: rgba(255,255,255,0.6); font-size: 16px; max-width: 480px; margin: 0 auto; }
+
+    /* MAIN */
+    .main { max-width: 1100px; margin: 0 auto; padding: 48px 24px; }
+    .section-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+    .section-top h2 { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; color: var(--navy); }
+    .cert-count { background: var(--navy); color: white; font-size: 12px; font-family: 'DM Mono', monospace; padding: 4px 12px; border-radius: 100px; }
+    .cert-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
+    .sso-banner { background: rgba(45,122,79,0.06); border: 1px solid rgba(45,122,79,0.2); border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; margin-bottom: 36px; }
+    .sso-icon { width: 40px; height: 40px; background: rgba(45,122,79,0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+    .sso-text strong { font-size: 14px; color: var(--success); display: block; margin-bottom: 2px; }
+    .sso-text span { font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; }
+
+    /* CERT CARD */
+    .cert-card { background: var(--cert-bg); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(26,39,68,0.08); transition: transform 0.2s, box-shadow 0.2s; }
+    .cert-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(26,39,68,0.15); }
+    .cert-header { background: linear-gradient(135deg, var(--navy), var(--navy-light)); padding: 20px 24px; position: relative; overflow: hidden; }
+    .cert-header::after { content:'🎓'; position:absolute; right:20px; top:50%; transform:translateY(-50%); font-size:36px; opacity:0.3; }
+    .cert-num { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--gold-light); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 6px; }
+    .cert-course { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: white; }
+    .cert-body { padding: 20px 24px; }
+    .cert-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    .ml { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; font-family: 'DM Mono', monospace; margin-bottom: 3px; }
+    .mv { font-size: 13px; font-weight: 600; color: var(--text); }
+    .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 16px 0; opacity: 0.4; }
+    .status { display: inline-flex; align-items: center; gap: 6px; background: rgba(45,122,79,0.08); border: 1px solid rgba(45,122,79,0.2); border-radius: 100px; padding: 4px 10px; font-size: 11px; color: var(--success); font-weight: 600; }
+    .dl-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; background: linear-gradient(135deg, var(--navy), var(--navy-light)); color: white; border: none; border-radius: 10px; padding: 12px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-top: 16px; }
+    .dl-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(26,39,68,0.3); }
+
+    /* LOGIN PAGE */
+    #login-page { display: none; min-height: 100vh; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--navy), var(--navy-light)); }
+    .login-card { background: white; border-radius: 24px; padding: 48px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 24px 80px rgba(0,0,0,0.3); }
+    .login-logo { width: 64px; height: 64px; background: linear-gradient(135deg, var(--gold), var(--gold-light)); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 20px; }
+    .login-card h2 { font-family: 'Playfair Display', serif; font-size: 28px; color: var(--navy); margin-bottom: 8px; }
+    .login-card p { color: var(--muted); font-size: 14px; margin-bottom: 24px; line-height: 1.6; }
+    .login-hint { background: rgba(201,151,58,0.08); border: 1px solid rgba(201,151,58,0.2); border-radius: 10px; padding: 12px 16px; font-size: 13px; color: var(--gold-dark); margin-bottom: 24px; text-align: left; }
+    .login-hint strong { display: block; margin-bottom: 4px; }
+    .sign-in-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; background: linear-gradient(135deg, var(--navy), var(--navy-light)); color: white; border: none; border-radius: 12px; padding: 16px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+    .sign-in-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,39,68,0.4); }
+
+    /* LOADING */
+    #loading-page { display: flex; min-height: 100vh; align-items: center; justify-content: center; flex-direction: column; gap: 16px; }
+    .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .empty { text-align: center; padding: 60px 20px; color: var(--muted); grid-column: 1/-1; }
+    .empty .icon { font-size: 48px; margin-bottom: 16px; }
+    .empty h3 { font-size: 18px; color: var(--text); margin-bottom: 8px; }
+    #main-app { display: none; }
+  </style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading-page">
+  <div class="spinner"></div>
+  <p style="color:var(--muted);font-family:'DM Mono',monospace;font-size:13px">Checking SSO session...</p>
+</div>
+
+<!-- LOGIN -->
+<div id="login-page">
+  <div class="login-card">
+    <div class="login-logo">🎓</div>
+    <h2>Certificate Portal</h2>
+    <p>View and download your course completion certificates from ELearn Portal.</p>
+    <div class="login-hint">
+      <strong>💡 SSO Enabled</strong>
+      Already logged into ELearn Portal? You'll be signed in automatically!
+    </div>
+    <a class="sign-in-btn" id="sign-in-btn" href="#">🔐 &nbsp; Sign in with Keycloak</a>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="main-app">
+  <nav class="navbar">
+    <div class="brand">
+      <div class="brand-icon">🎓</div>
+      <div>
+        <span class="brand-text">Certificate Portal</span>
+        <span class="brand-sub">ELearn Network</span>
+      </div>
+    </div>
+    <div class="nav-right">
+      <div class="sso-pill"><div class="sso-dot"></div>SSO Active</div>
+      <div class="user-chip">
+        <div class="avatar" id="nav-avatar">?</div>
+        <div>
+          <div class="uname" id="nav-username">-</div>
+          <div class="urole" id="nav-role">-</div>
+        </div>
+      </div>
+      <button class="logout-btn" id="logout-btn">Logout</button>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">✦ Verified Certificates</div>
+      <h1>Your <span>Achievements</span></h1>
+      <p>All certificates are cryptographically verified and issued by ELearn Portal</p>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="sso-banner">
+      <div class="sso-icon">🔗</div>
+      <div class="sso-text">
+        <strong>✅ Single Sign-On — No login required!</strong>
+        <span>Authenticated via elearning-realm · Same session as ELearn Portal</span>
+      </div>
+    </div>
+    <div class="section-top">
+      <h2>My Certificates</h2>
+      <span class="cert-count" id="cert-count">0 certificates</span>
+    </div>
+    <div class="cert-grid" id="cert-grid"></div>
+  </div>
+</div>
+
+<script>
+  const KEYCLOAK_URL = 'http://localhost:9090';
+  const REALM = 'elearning-realm';
+  const CLIENT_ID = 'certificate-portal';
+  const API = 'https://localhost:7072/api';
+  const REDIRECT_URI = encodeURIComponent(window.location.origin + '/');
+
+  // Set login button href directly — no JS needed to trigger
+  const loginUrl = `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/auth`
+    + `?client_id=${CLIENT_ID}`
+    + `&redirect_uri=${REDIRECT_URI}`
+    + `&response_type=code`
+    + `&scope=openid+profile+email`
+    + `&kc_idp_hint=`;
+
+  document.getElementById('sign-in-btn').href = loginUrl;
+
+  // Check if we got a code back from Keycloak
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get('code');
+
+  if (code) {
+    // Exchange code for token
+    exchangeCodeForToken(code);
+  } else {
+    // Check if token already stored
+    const token = sessionStorage.getItem('kc_token');
+    const tokenData = sessionStorage.getItem('kc_token_data');
+    if (token && tokenData) {
+      showApp(JSON.parse(tokenData), token);
+    } else {
+      showLogin();
+    }
+  }
+
+  async function exchangeCodeForToken(code) {
+    try {
+      const body = new URLSearchParams({
+        grant_type: 'authorization_code',
+        client_id: CLIENT_ID,
+        code: code,
+        redirect_uri: window.location.origin + '/'
+      });
+
+      const res = await fetch(
+        `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/token`,
+        { method: 'POST', body: body }
+      );
+
+      if (!res.ok) throw new Error('Token exchange failed');
+
+      const data = await res.json();
+      const accessToken = data.access_token;
+
+      // Decode token
+      const payload = JSON.parse(atob(accessToken.split('.')[1]));
+
+      // Store in session
+      sessionStorage.setItem('kc_token', accessToken);
+      sessionStorage.setItem('kc_token_data', JSON.stringify(payload));
+      sessionStorage.setItem('kc_refresh', data.refresh_token || '');
+
+      // Clean URL
+      window.history.replaceState({}, document.title, '/');
+
+      showApp(payload, accessToken);
+
+    } catch (err) {
+      console.error('Token exchange error:', err);
+      showLogin();
+    }
+  }
+
+  function showLogin() {
+    document.getElementById('loading-page').style.display = 'none';
+    document.getElementById('login-page').style.display = 'flex';
+  }
+
+  function showApp(payload, token) {
+    document.getElementById('loading-page').style.display = 'none';
+    document.getElementById('main-app').style.display = 'block';
+
+    const username = payload.preferred_username ?? 'User';
+    const roles = payload.realm_access?.roles ?? [];
+    const role = roles.find(r => ['Admin','Instructor','Student'].includes(r)) ?? 'User';
+
+    document.getElementById('nav-avatar').textContent = username[0].toUpperCase();
+    document.getElementById('nav-username').textContent = username;
+    document.getElementById('nav-role').textContent = role;
+
+    document.getElementById('logout-btn').addEventListener('click', () => {
+  sessionStorage.clear();
+  window.location.href = `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/logout`
+    + `?client_id=${CLIENT_ID}`
+    + `&post_logout_redirect_uri=${encodeURIComponent(window.location.origin + '/')}`;
+});
+    loadCertificates(username, token);
+  }
+
+  async function loadCertificates(username, token) {
+    try {
+      const res = await fetch(`${API}/enrollment/my`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Failed');
+      const data = await res.json();
+      renderCertificates(data, username);
+    } catch (err) {
+      renderCertificates([], username);
+    }
+  }
+
+  function renderCertificates(enrollments, username) {
+    const grid = document.getElementById('cert-grid');
+    document.getElementById('cert-count').textContent =
+      `${enrollments.length} certificate${enrollments.length !== 1 ? 's' : ''}`;
+
+    if (!enrollments.length) {
+      grid.innerHTML = `<div class="empty">
+        <div class="icon">🎓</div>
+        <h3>No certificates yet</h3>
+        <p>Enroll in courses on ELearn Portal to earn certificates.</p>
+      </div>`;
+      return;
+    }
+
+    grid.innerHTML = enrollments.map(e => `
+      <div class="cert-card">
+        <div class="cert-header">
+          <div class="cert-num">CERT-${String(e.id).padStart(5,'0')}</div>
+          <div class="cert-course">${e.courseTitle}</div>
+        </div>
+        <div class="cert-body">
+          <div class="cert-meta">
+            <div><div class="ml">Issued To</div><div class="mv">${username}</div></div>
+            <div><div class="ml">Enrolled On</div><div class="mv">${new Date(e.enrolledAt).toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric'})}</div></div>
+            <div><div class="ml">Issued By</div><div class="mv">ELearn Portal</div></div>
+            <div><div class="ml">Course ID</div><div class="mv">#${e.courseId}</div></div>
+          </div>
+          <div class="divider"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span class="status">✓ &nbsp; Verified</span>
+            <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">ID:${e.id}-${e.courseId}</span>
+          </div>
+          <button class="dl-btn" onclick="downloadCert('${e.courseTitle}','${username}','${e.id}')">
+            ⬇ &nbsp; Download Certificate
+          </button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function downloadCert(course, username, id) {
+    const w = window.open('','_blank');
+    w.document.write(`<!DOCTYPE html><html><head><title>Certificate</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans&display=swap');
+      body{margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f5f0e8;font-family:'DM Sans',sans-serif}
+      .cert{width:800px;background:white;border:2px solid #c9973a;border-radius:8px;padding:60px;text-align:center;box-shadow:0 0 0 8px #faf7f2,0 0 0 10px #c9973a}
+      h1{font-family:'Playfair Display',serif;font-size:42px;color:#1a2744;margin-bottom:8px}
+      .sub{color:#c9973a;font-size:14px;letter-spacing:.2em;text-transform:uppercase;margin-bottom:40px}
+      .seal{width:80px;height:80px;border:3px solid #c9973a;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 24px}
+      .name{font-family:'Playfair Display',serif;font-size:36px;color:#1a2744;border-bottom:2px solid #c9973a;padding-bottom:12px;display:inline-block;margin-bottom:24px}
+      .course{font-family:'Playfair Display',serif;font-size:28px;color:#c9973a;margin-bottom:40px}
+      .footer{display:flex;justify-content:space-between;margin-top:40px;color:#999;font-size:12px}
+    </style></head><body>
+    <div class="cert">
+      <h1>Certificate of Completion</h1>
+      <div class="sub">ELearn Portal · Official Certificate</div>
+      <div class="seal">🏅</div>
+      <p style="color:#666;margin-bottom:12px">This is to certify that</p>
+      <div class="name">${username}</div>
+      <p style="color:#666;margin-bottom:12px">has successfully completed</p>
+      <div class="course">${course}</div>
+      <div class="footer">
+        <span>CERT-${String(id).padStart(5,'0')}</span>
+        <span>ELearn Portal · ${new Date().getFullYear()}</span>
+        <span>Verified ✓</span>
+      </div>
+    </div>
+    <script>window.print();<\/script>
+    </body></html>`);
+  }
+</script>
+</body>
+</html>
