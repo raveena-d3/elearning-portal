@@ -1,0 +1,13 @@
+<mat-toolbar color="primary">
+  <button mat-icon-button (click)="toggleSidenav.emit()">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span style="font-weight:bold; font-size:18px">🎓 ELearn Portal</span>
+  <span style="flex: 1 1 auto"></span>
+  <span *ngIf="username" style="margin-right: 16px">
+    {{ username }} ({{ role }})
+  </span>
+  <button mat-icon-button (click)="logout()" title="Logout">
+    <mat-icon>exit_to_app</mat-icon>
+  </button>
+</mat-toolbar>

@@ -1,0 +1,137 @@
+<div class="page-container">
+  <div class="page-header">
+    <h2>{{ isEdit ? '✏️ Edit Course' : '➕ New Course' }}</h2>
+  </div>
+
+  <mat-card class="form-card">
+    <form (ngSubmit)="onSubmit()" #courseForm="ngForm">
+
+      <!-- Title -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Course Title</mat-label>
+        <input matInput [(ngModel)]="form.title" name="title" required />
+      </mat-form-field>
+
+      <!-- Description -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Description</mat-label>
+        <textarea matInput [(ngModel)]="form.description"
+          name="description" rows="4" required></textarea>
+      </mat-form-field>
+
+      <!-- Instructor ID -->
+      <!-- Only show Instructor ID field for Admin -->
+<mat-form-field appearance="outline" class="full-width"
+    *ngIf="role === 'Admin'">
+    <mat-label>Instructor ID</mat-label>
+    <input matInput type="number" [(ngModel)]="form.instructorId"
+        name="instructorId" required />
+    <mat-hint>Enter the user ID of the instructor</mat-hint>
+</mat-form-field>
+
+      <!-- ★ NEW — YouTube Links Section -->
+      <div class="section-title">
+        <mat-icon>play_circle</mat-icon>
+        YouTube Links
+      </div>
+
+      <!-- Add YouTube link input -->
+      <div class="youtube-input-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>YouTube URL</mat-label>
+          <input matInput [(ngModel)]="newYoutubeLink"
+            name="newYoutubeLink"
+            placeholder="https://www.youtube.com/watch?v=..." />
+          <mat-icon matPrefix>link</mat-icon>
+        </mat-form-field>
+        <button mat-raised-button color="accent"
+          type="button" (click)="addYoutubeLink()">
+          Add Link
+        </button>
+      </div>
+
+      <!-- List of added YouTube links -->
+      <div class="youtube-links-list" *ngIf="form.youtubeLinks && form.youtubeLinks.length > 0">
+        <div class="youtube-link-item"
+          *ngFor="let link of form.youtubeLinks; let i = index">
+          <mat-icon color="warn">play_circle_filled</mat-icon>
+          <span class="link-text">{{ link }}</span>
+          <button mat-icon-button color="warn"
+            type="button" (click)="removeYoutubeLink(i)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+      <p class="empty-hint"
+        *ngIf="!form.youtubeLinks || form.youtubeLinks.length === 0">
+        No YouTube links added yet.
+      </p>
+
+      <!-- ★ NEW — Video Upload Section -->
+      <div class="section-title" *ngIf="isEdit">
+  <mat-icon>video_library</mat-icon>
+  Upload Course Video
+</div>
+
+<div class="video-upload-section" *ngIf="isEdit">
+
+  <!-- ★ ADD THIS — shows current video if exists -->
+  <div *ngIf="existingVideoOriginalName" class="existing-video-info"
+    style="display:flex; align-items:center; gap:8px; margin-bottom:12px;
+           padding:10px; background:#E6F1FB; border-radius:8px;">
+    <mat-icon color="primary">video_file</mat-icon>
+    <span>Current video: <strong>{{ existingVideoOriginalName }}</strong></span>
+    <span style="color:#888; font-size:12px;">
+      — uploading a new video will replace this
+    </span>
+    <button mat-icon-button color="warn"
+        type="button"
+        (click)="deleteVideo()"
+        [disabled]="deletingVideo"
+        matTooltip="Delete this video">
+        <mat-icon>delete</mat-icon>
+    </button>
+  </div>
+
+  <input type="file" #videoInput accept="video/mp4,video/webm,video/ogg"
+    (change)="onFileSelected($event)" style="display:none" />
+
+  <button mat-stroked-button type="button"
+    (click)="videoInput.click()">
+    <mat-icon>upload</mat-icon>
+    {{ selectedFile ? selectedFile.name : 'Choose Video File' }}
+  </button>
+
+        <p class="upload-hint">Accepted: MP4, WebM, OGG — Max 500MB</p>
+
+        <div *ngIf="selectedFile" class="selected-file-info">
+          <mat-icon color="primary">check_circle</mat-icon>
+          {{ selectedFile.name }}
+          ({{ (selectedFile.size / 1024 / 1024).toFixed(1) }} MB)
+        </div>
+
+        <div *ngIf="videoUploadSuccess" class="upload-success">
+          <mat-icon color="primary">check_circle</mat-icon>
+          Video uploaded successfully!
+        </div>
+      </div>
+
+      <p class="upload-hint" *ngIf="!isEdit">
+        Save the course first, then you can upload a video.
+      </p>
+
+      <!-- Error -->
+      <div class="error-msg" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button mat-button type="button" routerLink="/courses">Cancel</button>
+        <button mat-raised-button color="primary"
+          type="submit" [disabled]="loading">
+          {{ isEdit ? 'Update' : 'Create' }} Course
+        </button>
+      </div>
+
+    </form>
+  </mat-card>
+</div>

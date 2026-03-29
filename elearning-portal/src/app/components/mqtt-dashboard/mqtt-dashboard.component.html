@@ -1,0 +1,88 @@
+<div class="dashboard">
+
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <h2>Live Activity Feed</h2>
+      <p>Real-time events via MQTT</p>
+    </div>
+    <div class="status" [class.connected]="connected" [class.disconnected]="!connected">
+      <span class="dot"></span>
+      {{ connected ? 'Connected' : 'Connecting...' }}
+    </div>
+  </div>
+
+  <!-- Stats cards -->
+  <div class="stats-row">
+    <div class="stat-card" style="--c:#185FA5; --bg:#E6F1FB">
+      <div class="stat-value">{{ stats.logins }}</div>
+      <div class="stat-label">Logins</div>
+    </div>
+    <div class="stat-card" style="--c:#0F6E56; --bg:#E1F5EE">
+      <div class="stat-value">{{ stats.enrollments }}</div>
+      <div class="stat-label">Enrollments</div>
+    </div>
+    <div class="stat-card" style="--c:#3B6D11; --bg:#EAF3DE">
+      <div class="stat-value">{{ stats.quizzes }}</div>
+      <div class="stat-label">Quizzes</div>
+    </div>
+    <div class="stat-card" style="--c:#533AB7; --bg:#EEEDFE">
+      <div class="stat-value">{{ stats.discussions }}</div>
+      <div class="stat-label">Discussions</div>
+    </div>
+    <div class="stat-card" style="--c:#993C1D; --bg:#FAECE7">
+      <div class="stat-value">{{ stats.completions }}</div>
+      <div class="stat-label">Completions</div>
+    </div>
+    <div class="stat-card" style="--c:#854F0B; --bg:#FAEEDA">
+      <div class="stat-value">{{ stats.progress }}</div>
+      <div class="stat-label">Progress</div>
+    </div>
+  </div>
+
+  <!-- Feed header -->
+  <div class="feed-header">
+    <span>Events ({{ messages.length }})</span>
+    <button *ngIf="messages.length > 0" (click)="clearMessages()">Clear</button>
+  </div>
+
+  <!-- Event feed -->
+  <div class="feed">
+
+    <div *ngIf="messages.length === 0" class="empty">
+      <div class="empty-icon">📡</div>
+      <div>{{ connected ? 'Waiting for events... Run the simulator' : 'Connecting to broker...' }}</div>
+    </div>
+
+    <div *ngFor="let event of messages; trackBy: trackById" class="event-row">
+
+      <div class="event-icon" [style.background]="getEventStyle(event.topic).bg">
+        {{ getEventStyle(event.topic).icon }}
+      </div>
+
+      <div class="event-body">
+        <div class="event-tags">
+          <span class="badge"
+                [style.color]="getEventStyle(event.topic).color"
+                [style.background]="getEventStyle(event.topic).bg">
+            {{ getEventStyle(event.topic).label }}
+          </span>
+          <span *ngIf="event.score !== undefined" class="badge score">
+            Score: {{ event.score }}%
+          </span>
+        </div>
+        <div class="event-message">{{ event.message || event.topic }}</div>
+        <div *ngIf="event.percent !== undefined" class="progress-wrap">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="event.percent"></div>
+          </div>
+          <span class="progress-label">{{ event.percent }}% complete</span>
+        </div>
+      </div>
+
+      <div class="event-time">{{ event.receivedAt }}</div>
+    </div>
+
+  </div>
+
+</div>

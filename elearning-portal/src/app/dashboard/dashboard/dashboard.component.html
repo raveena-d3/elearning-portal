@@ -1,0 +1,58 @@
+<div class="dashboard-container">
+  <h2>👋 Welcome, {{ username }}!</h2>
+  <p class="role-badge">{{ role }}</p>
+
+  <div *ngIf="loading" style="text-align:center; margin-top:40px">
+    <mat-spinner diameter="40" style="margin:auto"></mat-spinner>
+    <p>Loading dashboard...</p>
+  </div>
+
+  <div *ngIf="!loading" class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon">📚</div>
+        <div class="stat-number">{{ totalCourses }}</div>
+        <div class="stat-label">Total Courses</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card" *ngIf="role === 'Admin'">
+      <mat-card-content>
+        <div class="stat-icon">👥</div>
+        <div class="stat-number">{{ totalUsers }}</div>
+        <div class="stat-label">Total Users</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon">🎓</div>
+        <div class="stat-number">{{ role }}</div>
+        <div class="stat-label">Your Role</div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div *ngIf="!loading" class="quick-links">
+    <h3>Quick Links</h3>
+    <div class="links-grid">
+      <button mat-raised-button color="primary" routerLink="/courses">
+        <mat-icon>book</mat-icon> Courses
+      </button>
+      <button mat-raised-button color="accent" routerLink="/quizzes">
+        <mat-icon>quiz</mat-icon> Quizzes
+      </button>
+      <button mat-raised-button routerLink="/discussions">
+        <mat-icon>forum</mat-icon> Discussions
+      </button>
+      <button mat-raised-button routerLink="/enrollments"
+        *ngIf="role === 'Student'">
+        <mat-icon>school</mat-icon> My Enrollments
+      </button>
+      <button mat-raised-button color="warn" routerLink="/users"
+        *ngIf="role === 'Admin'">
+        <mat-icon>people</mat-icon> Manage Users
+      </button>
+    </div>
+  </div>
+</div>

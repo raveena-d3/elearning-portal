@@ -1,0 +1,16 @@
+.sidenav-container {
+    height: calc(100vh - 64px);
+}
+
+.sidenav {
+    width: 240px;
+    background: rgb(208, 205, 193);
+    overflow: hidden;    /* ★ ADD THIS */
+}
+
+.main-content {
+    padding: 24px;
+    background: #f2f0f0;
+    min-height: 100%;
+    overflow-y: auto;
+}

@@ -1,0 +1,42 @@
+<!-- src/app/shared/sidebar/sidebar.component.html -->
+<mat-nav-list>
+  <h3 mat-subheader style="color: rgba(255,255,255,0.5)">Navigation</h3>
+
+  <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link">
+    <mat-icon>dashboard</mat-icon>
+    <span>&nbsp; Dashboard</span>
+  </a>
+
+  <a mat-list-item routerLink="/courses" routerLinkActive="active-link">
+    <mat-icon>menu_book</mat-icon>
+    <span>&nbsp; Courses</span>
+  </a>
+
+  <a mat-list-item routerLink="/enrollments" routerLinkActive="active-link"
+    *ngIf="role === 'Student'">
+    <mat-icon>school</mat-icon>
+    <span>&nbsp; My Enrollments</span>
+  </a>
+
+  <a mat-list-item routerLink="/discussions" routerLinkActive="active-link">
+    <mat-icon>forum</mat-icon>
+    <span>&nbsp; Discussions</span>
+  </a>
+
+  <a mat-list-item routerLink="/quizzes" routerLinkActive="active-link">
+    <mat-icon>quiz</mat-icon>
+    <span>&nbsp; Quizzes</span>
+  </a>
+
+  <a mat-list-item routerLink="/users" routerLinkActive="active-link"
+    *ngIf="role === 'Admin'">
+    <mat-icon>manage_accounts</mat-icon>
+    <span>&nbsp; {{ 'manage_users' | translate }}</span>
+  </a>
+  <a mat-list-item routerLink="/live" routerLinkActive="active-link"
+    *ngIf="role === 'Admin'">
+    <mat-icon>sensors</mat-icon>
+    <span>&nbsp; Live Feed</span>
+  </a>
+
+</mat-nav-list>

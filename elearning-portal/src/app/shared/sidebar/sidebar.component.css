@@ -1,0 +1,29 @@
+mat-nav-list {
+    padding-top: 8px;
+    width: 240px;
+}
+
+mat-nav-list a {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 100%;
+    padding: 0 16px;
+}
+
+mat-nav-list a span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+mat-nav-list mat-icon {
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+
+.mat-drawer-inner-container {
+    width: 240px;
+    overflow: hidden !important;
+}

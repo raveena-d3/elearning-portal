@@ -1,0 +1,88 @@
+<div class="page-container">
+  <div class="page-header">
+    <h2>📝 Quizzes</h2>
+    <button mat-raised-button color="primary"
+      *ngIf="role === 'Admin' || role === 'Instructor'"
+      routerLink="/quizzes/new">
+      <mat-icon>add</mat-icon> New Quiz
+    </button>
+  </div>
+
+  <!-- Filter by course — hidden for Instructor -->
+  <mat-form-field appearance="outline" style="width:300px; margin-bottom:16px"
+    *ngIf="role !== 'Instructor'">
+    <mat-label>Filter by Course ID</mat-label>
+    <input matInput type="number" [(ngModel)]="filterCourseId"
+      (ngModelChange)="loadByCourse()" placeholder="Enter course ID" />
+  </mat-form-field>
+
+  <div class="courses-grid">
+    <mat-card class="quiz-card" *ngFor="let quiz of quizzes">
+      <mat-card-header>
+        <mat-card-title>{{ quiz.title }}</mat-card-title>
+        <mat-card-subtitle>
+          📘 {{ quiz.courseTitle }} | 👨‍🏫 {{ quiz.instructorName }}
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-actions>
+
+        <!-- Student: Attempt button -->
+        <button mat-raised-button color="accent"
+          *ngIf="role === 'Student'"
+          [routerLink]="['/quizzes', quiz.id, 'attempt']">
+          ✏️ Attempt Quiz
+        </button>
+
+        <!-- Admin/Instructor: Delete -->
+        <button mat-icon-button color="warn"
+          *ngIf="role === 'Admin' || (role === 'Instructor' && quiz.instructorId === userId)"
+          (click)="deleteQuiz(quiz.id)">
+          <mat-icon>delete</mat-icon>
+        </button>
+
+      </mat-card-actions>
+    </mat-card>
+
+    <!-- Empty state -->
+    <p *ngIf="quizzes.length === 0" class="empty-state">
+      <span *ngIf="role === 'Instructor'">
+        No quizzes found in your courses.
+      </span>
+      <span *ngIf="role !== 'Instructor'">
+        Enter a Course ID above to see quizzes.
+      </span>
+    </p>
+
+  </div>
+
+  <!-- Student: My Attempts -->
+  <div *ngIf="role === 'Student' && myAttempts.length > 0" style="margin-top: 40px">
+    <h3>📊 My Quiz Results</h3>
+    <table mat-table [dataSource]="myAttempts"
+      class="mat-elevation-z2" style="width:100%; margin-top:16px">
+      <ng-container matColumnDef="quiz">
+        <th mat-header-cell *matHeaderCellDef>Quiz</th>
+        <td mat-cell *matCellDef="let a">{{ a.quizTitle }}</td>
+      </ng-container>
+      <ng-container matColumnDef="score">
+        <th mat-header-cell *matHeaderCellDef>Score</th>
+        <td mat-cell *matCellDef="let a">{{ a.score }} / {{ a.totalQuestions }}</td>
+      </ng-container>
+      <ng-container matColumnDef="percentage">
+        <th mat-header-cell *matHeaderCellDef>Percentage</th>
+        <td mat-cell *matCellDef="let a">
+          <span [style.color]="a.percentage >= 70 ? '#2e7d32' :
+            a.percentage >= 40 ? '#e65100' : '#c62828'">
+            {{ a.percentage }}%
+          </span>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef>Date</th>
+        <td mat-cell *matCellDef="let a">{{ a.attemptedAt | date:'mediumDate' }}</td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="attemptColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: attemptColumns;"></tr>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,115 @@
+<div class="page-container">
+
+  <!-- Loading -->
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <!-- Already attempted -->
+  <div *ngIf="alreadyAttempted && result" class="result-card">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>📊 Your Result — {{ result.quizTitle }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="score-circle" [ngClass]="{
+          'score-high': result.percentage >= 70,
+          'score-mid': result.percentage >= 40 && result.percentage < 70,
+          'score-low': result.percentage < 40
+        }">
+          {{ result.percentage }}%
+        </div>
+        <p class="score-text">
+          You scored <strong>{{ result.score }}</strong> out of
+          <strong>{{ result.totalQuestions }}</strong>
+        </p>
+        <p class="attempt-date">
+          Attempted: {{ result.attemptedAt | date:'medium' }}
+        </p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button routerLink="/quizzes">← Back to Quizzes</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <!-- Quiz attempt form -->
+  <div *ngIf="!loading && !alreadyAttempted && quiz">
+    <div class="page-header">
+      <h2>📝 {{ quiz.title }}</h2>
+      <span style="color:#666">{{ quiz.courseTitle }} | {{ questions.length }} Questions</span>
+    </div>
+
+    <div class="questions-list">
+      <mat-card class="question-card" *ngFor="let q of questions; let i = index">
+        <mat-card-content>
+          <p class="question-text">
+            <strong>Q{{ i + 1 }}.</strong> {{ q.question }}
+          </p>
+          <div class="options-list">
+            <div class="option-item"
+              *ngFor="let option of q.options"
+              [ngClass]="{ 'option-selected': selectedAnswers[i] === option }"
+              (click)="selectAnswer(i, option)">
+              <mat-icon class="option-icon">
+                {{ selectedAnswers[i] === option ? 'radio_button_checked' : 'radio_button_unchecked' }}
+              </mat-icon>
+              {{ option }}
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="error-msg" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+    <div class="submit-section">
+      <p class="answered-count">
+        Answered {{ answeredCount }} of {{ questions.length }} questions
+      </p>
+      <button mat-raised-button color="primary"
+        (click)="submitQuiz()"
+        [disabled]="submitting || answeredCount < questions.length">
+        <mat-spinner diameter="20" *ngIf="submitting" style="display:inline-block"></mat-spinner>
+        <span *ngIf="!submitting">Submit Quiz</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Result after submission -->
+  <div *ngIf="submitted && result" class="result-card">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>🎉 Quiz Submitted!</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="score-circle" [ngClass]="{
+          'score-high': result.percentage >= 70,
+          'score-mid': result.percentage >= 40 && result.percentage < 70,
+          'score-low': result.percentage < 40
+        }">
+          {{ result.percentage }}%
+        </div>
+        <p class="score-text">
+          You scored <strong>{{ result.score }}</strong> out of
+          <strong>{{ result.totalQuestions }}</strong>
+        </p>
+        <p *ngIf="result.percentage >= 70" style="color: #2e7d32; font-weight: 600; margin-top: 8px;">
+          ✅ Excellent work!
+        </p>
+        <p *ngIf="result.percentage >= 40 && result.percentage < 70"
+          style="color: #f57c00; font-weight: 600; margin-top: 8px;">
+          👍 Good effort! Keep practicing.
+        </p>
+        <p *ngIf="result.percentage < 40" style="color: #c62828; font-weight: 600; margin-top: 8px;">
+          📚 Keep studying and try again next time.
+        </p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button routerLink="/quizzes">← Back to Quizzes</button>
+        <button mat-button routerLink="/enrollments">My Courses</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+</div>

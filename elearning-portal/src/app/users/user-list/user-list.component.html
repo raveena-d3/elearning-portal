@@ -1,0 +1,96 @@
+<div class="page-container">
+  <div class="page-header">
+    <h2>👥 Manage Users</h2>
+    <button mat-raised-button color="primary" (click)="toggleCreateForm()">
+      <mat-icon>{{ showCreateForm ? 'close' : 'person_add' }}</mat-icon>
+      {{ showCreateForm ? 'Cancel' : 'Add User' }}
+    </button>
+  </div>
+
+  <!-- Create User Form -->
+  <mat-card class="create-form" *ngIf="showCreateForm">
+    <mat-card-title>Create New User</mat-card-title>
+    <mat-card-content>
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Username</mat-label>
+          <input matInput [(ngModel)]="newUser.username"
+            placeholder="e.g. student6" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Password</mat-label>
+          <input matInput type="password"
+            [(ngModel)]="newUser.password"
+            placeholder="Min 8 characters" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Role</mat-label>
+          <mat-select [(ngModel)]="newUser.role">
+            <mat-option value="Admin">Admin</mat-option>
+            <mat-option value="Instructor">Instructor</mat-option>
+            <mat-option value="Student">Student</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary"
+        (click)="createUser()" [disabled]="creating">
+        <mat-spinner diameter="20" *ngIf="creating"
+          style="display:inline-block; margin-right:8px">
+        </mat-spinner>
+        {{ creating ? 'Creating...' : 'Create User' }}
+      </button>
+      <button mat-button (click)="toggleCreateForm()">Cancel</button>
+    </mat-card-actions>
+  </mat-card>
+
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <table mat-table [dataSource]="users"
+    class="mat-elevation-z4 full-width" *ngIf="!loading">
+
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef>ID</th>
+      <td mat-cell *matCellDef="let u">{{ u.id }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="username">
+      <th mat-header-cell *matHeaderCellDef>Username</th>
+      <td mat-cell *matCellDef="let u">{{ u.username }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="role">
+      <th mat-header-cell *matHeaderCellDef>Role</th>
+      <td mat-cell *matCellDef="let u">
+        <mat-select [(ngModel)]="u.role"
+          (ngModelChange)="updateRole(u.id, $event)">
+          <mat-option value="Admin">Admin</mat-option>
+          <mat-option value="Instructor">Instructor</mat-option>
+          <mat-option value="Student">Student</mat-option>
+        </mat-select>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let u">
+        <button mat-icon-button color="warn" (click)="deleteUser(u.id)"
+          [title]="'Delete ' + u.username">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+  <p *ngIf="!loading && users.length === 0" class="empty-state">
+    No users found.
+  </p>
+</div>

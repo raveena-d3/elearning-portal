@@ -1,0 +1,89 @@
+<div class="page-container">
+  <div class="page-header">
+    <h2>💬 Discussions</h2>
+  </div>
+
+  <!-- Filter by course — hidden for Instructor -->
+  <mat-form-field appearance="outline" style="width:300px; margin-bottom:16px"
+    *ngIf="role !== 'Instructor'">
+    <mat-label>Filter by Course ID</mat-label>
+    <input matInput type="number" [(ngModel)]="filterCourseId"
+      (ngModelChange)="loadByCourse()" placeholder="Enter course ID" />
+  </mat-form-field>
+
+  <!-- Ask question form - Students only -->
+  <mat-card class="question-form" *ngIf="role === 'Student'" style="margin-bottom: 24px">
+    <mat-card-content>
+      <h3>Ask a Question</h3>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Course ID</mat-label>
+        <input matInput type="number" [(ngModel)]="newQuestion.courseId" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Your Question</mat-label>
+        <textarea matInput [(ngModel)]="newQuestion.question" rows="3"></textarea>
+      </mat-form-field>
+      <button mat-raised-button color="primary" (click)="askQuestion()"
+        [disabled]="!newQuestion.question || !newQuestion.courseId">
+        Submit Question
+      </button>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Discussions list -->
+  <div class="discussions-list">
+    <mat-card class="discussion-card" *ngFor="let d of discussions">
+      <mat-card-header>
+        <mat-card-title>{{ d.question }}</mat-card-title>
+        <mat-card-subtitle>
+          {{ d.studentName }} | {{ d.courseTitle }} | {{ d.askedAt | date:'medium' }}
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+
+        <!-- Answered -->
+        <div class="answer-section" *ngIf="d.answer">
+          <strong>✅ Answer:</strong> {{ d.answer }}
+          <small> — {{ d.answeredAt | date:'short' }}</small>
+        </div>
+
+        <!-- Not answered -->
+        <div class="no-answer" *ngIf="!d.answer">
+          <em>⏳ Not yet answered</em>
+        </div>
+
+        <!-- Answer form for Admin/Instructor -->
+        <div *ngIf="(role === 'Admin' || role === 'Instructor') && !d.answer"
+          class="answer-form" style="margin-top: 12px">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Write Answer</mat-label>
+            <textarea matInput [(ngModel)]="answerInputs[d.id]" rows="2"></textarea>
+          </mat-form-field>
+          <button mat-raised-button color="accent" (click)="submitAnswer(d.id)"
+            [disabled]="!answerInputs[d.id]">
+            Submit Answer
+          </button>
+        </div>
+
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-icon-button color="warn"
+          *ngIf="role === 'Admin' || (role === 'Student' && d.studentId === userId)"
+          (click)="deleteDiscussion(d.id)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+
+    <!-- Empty state -->
+    <p *ngIf="discussions.length === 0" class="empty-state">
+      <span *ngIf="role === 'Instructor'">
+        No discussions found in your courses.
+      </span>
+      <span *ngIf="role !== 'Instructor'">
+        No discussions found. Filter by a Course ID above to see discussions.
+      </span>
+    </p>
+
+  </div>
+</div>
