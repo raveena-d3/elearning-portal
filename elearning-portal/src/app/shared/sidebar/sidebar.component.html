@@ -31,12 +31,20 @@
   <a mat-list-item routerLink="/users" routerLinkActive="active-link"
     *ngIf="role === 'Admin'">
     <mat-icon>manage_accounts</mat-icon>
-    <span>&nbsp; Manage Users</span>
+    <span>&nbsp; {{'admin.manage_users' | translate}}</span>
   </a>
   <a mat-list-item routerLink="/live" routerLinkActive="active-link"
     *ngIf="role === 'Admin'">
     <mat-icon>sensors</mat-icon>
     <span>&nbsp; Live Feed</span>
   </a>
+  <div style="padding: 16px 8px; margin-top: 16px;">
+    <button mat-stroked-button
+      style="width:100%; color:white; border-color:rgba(255,255,255,0.3);"
+      (click)="switchLanguage()">
+      <mat-icon>language</mat-icon>
+      &nbsp; {{ currentLang === 'en' ? 'தமிழ்' : 'English' }}
+    </button>
+  </div>
 
 </mat-nav-list>

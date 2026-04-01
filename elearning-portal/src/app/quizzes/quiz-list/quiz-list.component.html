@@ -9,12 +9,19 @@
   </div>
 
   <!-- Filter by course — hidden for Instructor -->
-  <mat-form-field appearance="outline" style="width:300px; margin-bottom:16px"
-    *ngIf="role !== 'Instructor'">
+  <div style="display:flex; gap:8px; margin-bottom:16px"
+  *ngIf="role !== 'Instructor'">
+  <mat-form-field appearance="outline" style="width:300px;">
     <mat-label>Filter by Course ID</mat-label>
     <input matInput type="number" [(ngModel)]="filterCourseId"
-      (ngModelChange)="loadByCourse()" placeholder="Enter course ID" />
+      placeholder="Enter course ID" />
   </mat-form-field>
+  <button mat-raised-button color="primary"
+    style="height:56px;"
+    (click)="loadByCourse()">
+    Search
+  </button>
+</div>
 
   <div class="courses-grid">
     <mat-card class="quiz-card" *ngFor="let quiz of quizzes">

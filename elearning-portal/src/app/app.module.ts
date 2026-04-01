@@ -1,9 +1,11 @@
 import { NgModule, APP_INITIALIZER } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { OAuthModule, OAuthService, AuthConfig } from 'angular-oauth2-oidc';
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -22,17 +24,22 @@ import { MqttDashboardComponent } from './components/mqtt-dashboard/mqtt-dashboa
 import { environment } from '../environments/environment';
 
 export const authConfig: AuthConfig = {
-  issuer: environment.keycloak.issuer,
-  redirectUri: window.location.origin,
-  clientId: environment.keycloak.clientId,
-  responseType: 'code',
-  scope: 'openid profile email',
+  issuer:               environment.keycloak.issuer,
+  redirectUri:          window.location.origin,
+  clientId:             environment.keycloak.clientId,
+  responseType:         'code',
+  scope:                'openid profile email',
   showDebugInformation: true,
-  requireHttps: false,
-  clearHashAfterLogin: true,
+  requireHttps:         false,
+  clearHashAfterLogin:  true,
   sessionChecksEnabled: false,
-  oidc: true
+  oidc:                 true
 };
+
+// ★ Factory function for loading translation files
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+}
 
 export function initializeOAuth(oauthService: OAuthService): () => Promise<void> {
   return async () => {
@@ -56,6 +63,17 @@ export function initializeOAuth(oauthService: OAuthService): () => Promise<void>
     CommonModule,
     AppRoutingModule,
     OAuthModule.forRoot(),
+
+    // ★ ADD TranslateModule
+    TranslateModule.forRoot({
+      defaultLanguage: 'en',
+      loader: {
+        provide:    TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps:       [HttpClient]
+      }
+    }),
+
     MatToolbarModule,
     MatSidenavModule,
     MatListModule,
@@ -66,15 +84,15 @@ export function initializeOAuth(oauthService: OAuthService): () => Promise<void>
   ],
   providers: [
     {
-      provide: APP_INITIALIZER,
+      provide:    APP_INITIALIZER,
       useFactory: initializeOAuth,
-      deps: [OAuthService],
-      multi: true
+      deps:       [OAuthService],
+      multi:      true
     },
     {
-      provide: HTTP_INTERCEPTORS,
+      provide:  HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
-      multi: true
+      multi:    true
     }
   ],
   bootstrap: [AppComponent]

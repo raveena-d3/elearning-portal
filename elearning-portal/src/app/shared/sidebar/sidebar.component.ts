@@ -1,32 +1,35 @@
 import { Component, OnInit } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
-
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-  selector: 'app-sidebar',
+  selector:    'app-sidebar',
   templateUrl: './sidebar.component.html',
-  styleUrls: ['./sidebar.component.css']
+  styleUrls:   ['./sidebar.component.css']
 })
 export class SidebarComponent implements OnInit {
-  role = '';
+  role        = '';
+  currentLang = 'en';
 
-  constructor(private oauthService: OAuthService) {}
+  constructor(
+    private oauthService: OAuthService,
+    private translate:    TranslateService
+  ) {}
 
   ngOnInit(): void {
     this.extractRole();
+    this.translate.setDefaultLang('en');
+    this.translate.use('en');
   }
 
   private extractRole(): void {
     try {
-      // Try ID token claims first
-      const idClaims = this.oauthService.getIdentityClaims() as any;
-      
-      // Try access token
+      const idClaims  = this.oauthService.getIdentityClaims() as any;
       const accessToken = this.oauthService.getAccessToken();
+
       if (accessToken) {
-        const payload = JSON.parse(atob(accessToken.split('.')[1]));
+        const payload   = JSON.parse(atob(accessToken.split('.')[1]));
         console.log('Access token payload:', payload);
-        
         const roles: string[] = payload?.realm_access?.roles ?? [];
         this.role = roles.find(r =>
           ['Admin', 'Instructor', 'Student'].includes(r)
@@ -44,5 +47,11 @@ export class SidebarComponent implements OnInit {
     } catch (e) {
       console.error('Role extraction error:', e);
     }
+  }
+
+  // ★ Toggle between English and Tamil
+  switchLanguage(): void {
+    this.currentLang = this.currentLang === 'en' ? 'ta' : 'en';
+    this.translate.use(this.currentLang);
   }
 }
